@@ -46,7 +46,7 @@ exports.postCart = (req, res, next) => {
     .then(result => {
         console.log(`Inserted Cart Count: ${result.modifiedCount}`);
         console.log('Item Added To Cart!');
-        res.redirect('/products');
+        res.redirect('/cart');
     })
     .catch(err => console.log(err));
 

@@ -11,17 +11,23 @@
                         <li class="cart__item">
                             <h1><%= p.title %></h1>
                             <h2>Quantity: <%= p.quantity %></h2>
-                            <form action="/cart-delete-item" method="POST">
-                                <input type="hidden" value="<%= p._id %>" name="productId">
-                                <button class="btn danger" type="submit">Delete</button>
-                            </form>
+                            <div class="cart__button-wrapper">
+                                <form action="/cart" method="POST">
+                                    <input type="hidden" value="<%= p._id %>" name="productId">
+                                    <button class="btn add" type="submit">Add</button>
+                                </form>
+                                <form action="/cart-delete-item" method="POST">
+                                    <input type="hidden" value="<%= p._id %>" name="productId">
+                                    <button class="btn danger" type="submit">Delete</button>
+                                </form>
+                            </div>
                         </li>
                     <% }) %>
                 </ul>
                 <hr>
                 <div class="centered">
                     <form action="/create-order" method="POST">
-                        <button type="submit" class="btn">Order Now!</button>
+                        <button type="submit" class="btn order">Order Now!</button>
                     </form>
                 </div>
             <% } else { %>
