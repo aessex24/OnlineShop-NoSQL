@@ -27,8 +27,7 @@ class User {
         });
         let newQuantity = 1;
         const updatedCartItems = [...this.cart.items];
-        console.log(`product with id: ${product._id} index: ${cartProductIndex}`);
-        console.log('updated cart items before if:', updatedCartItems);
+
         if(cartProductIndex >= 0) {
             newQuantity = this.cart.items[cartProductIndex].quantity + 1;
             updatedCartItems[cartProductIndex].quantity = newQuantity;
@@ -40,7 +39,6 @@ class User {
             });
         }
 
-        console.log('Updated cart after if:', updatedCartItems);
         const updatedCart = {items: updatedCartItems };
         const db = getDb();
 
@@ -67,6 +65,36 @@ class User {
                 });
             })
             .catch(err => console.log(err));
+    }
+
+    deleteCartItem(productId) {
+        const db = getDb();
+        let newQuantity;
+        const updatedCartItems = [...this.cart.items];
+
+        const productIndex = this.cart.items.findIndex(item => {
+            return item.productId.toString() === productId.toString();
+        });
+
+        if(this.cart.items[productIndex].quantity <= 1) {
+
+            const items = this.cart.items.filter( item => {
+                return item.productId.toString() !== productId.toString();
+            });
+
+            return db.collection('users').updateOne(
+                {_id: new ObjectId(this._id) },
+                { $set: { cart: { items: items } }}
+            );
+        } else {
+            newQuantity =  this.cart.items[productIndex].quantity - 1;
+            updatedCartItems[productIndex].quantity = newQuantity;
+
+            return db.collection('users').updateOne(
+                { _id: new ObjectId(this._id) },
+                { $set: { cart: { items: updatedCartItems } }}
+            );
+        }
     }
 
     static fetchUser(id) {

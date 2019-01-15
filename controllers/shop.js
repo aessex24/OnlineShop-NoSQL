@@ -46,73 +46,22 @@ exports.postCart = (req, res, next) => {
     .then(result => {
         console.log(`Inserted Cart Count: ${result.modifiedCount}`);
         console.log('Item Added To Cart!');
-        res.redirect('/cart');
+        res.redirect('/products');
     })
     .catch(err => console.log(err));
 
-
-    // let fetchedCart;
-    // let newQuantity = 1;
-    // console.log(`Product Id to be added to cart: ${prodId}`);
-    // req.user.getCart()
-    // .then( cart => {
-    //     fetchedCart = cart;
-    //     return cart.getProducts({ where: {id: prodId} });
-    // })
-    // .then( products => {
-    //     let product;
-    //     if(products.length > 0) {
-    //         product = products[0];
-    //     }
-    //     if(product) {
-    //         // get old quantity for this product and then change it
-    //         const oldQuantity = product.cartItem.quantity;
-    //         newQuantity = oldQuantity + 1;
-    //         return product;
-    //     }
-    //     return Product.findByPk(prodId);
-    // })
-    // .then( product => {
-    //     return fetchedCart.addProduct(product, {
-    //         through: { quantity: newQuantity }
-    //     });
-    // })
-    // .then ( () => {
-    //     res.redirect('/products');
-    // })
-    // .catch(err => console.log(err));
 };
-//
-// exports.postCartDeleteProduct = (req, res, next) => {
-//     const prodId = req.body.productId;
-//     let product;
-//     let updatedQuantity = 0;
-//     req.user.getCart()
-//     .then(cart => {
-//         fetchedCart = cart;
-//         return cart.getProducts({ where: {id: prodId } });
-//     })
-//     .then( products => {
-//         product = products[0];
-//         if(product) {
-//             const currentQuantity = product.cartItem.quantity;
-//             if(currentQuantity <= 1){
-//                 return product.cartItem.destroy();
-//             }
-//             else {
-//                 console.log(`current quantity: ${currentQuantity}`);
-//                 updatedQuantity = currentQuantity - 1;
-//                 console.log(`new quantity ${updatedQuantity}`);
-//                 return product.cartItem.update({quantity: updatedQuantity});
-//             }
-//         }
-//     })
-//     .then(result => {
-//         res.redirect('/cart');
-//     })
-//     .catch(err => console.log(err.message));
-//
-// };
+
+exports.postCartDeleteProduct = (req, res, next) => {
+    const prodId = req.body.productId;
+    req.user.deleteCartItem(prodId)
+    .then(result => {
+        console.log(`Deleted Product: ${result.deletedCount}`);
+        res.redirect('/cart');
+    })
+    .catch(err => console.log(err.message));
+
+};
 
 exports.getIndex = (req, res, next) => {
     Product.fetchAll()
