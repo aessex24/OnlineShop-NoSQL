@@ -1,8 +1,10 @@
 const mongodb = require('mongodb');
 
 const Product = require('../models/Product');
+const User = require('../models/User');
 
-const ObjectId = mongodb.ObjectId;
+
+//const ObjectId = mongodb.ObjectId;
 
 exports.getAddProduct = (req, res, next) => {
     const editMode = req.query.edit;
@@ -19,9 +21,9 @@ exports.postAddProduct = (req, res, next) => {
     const price = req.body.price;
     const description = req.body.description;
     const imageUrl = req.body.imageUrl;
-    const id = new ObjectId;
-    console.log('dummy object id', id)
-    const product = new Product(title, price, description, imageUrl, id);
+    const userId = req.user._id;
+    console.log(`associated user id: ${userId}`);
+    const product = new Product(title, price, description, imageUrl, userId);
     product.save()
     .then( (result) => {
         console.log('Product was created!!!');
@@ -66,26 +68,26 @@ exports.getEditProduct = (req, res, next) => {
 };
 
 exports.postEditProduct = (req, res, next) => {
-    //const updates = {prodId, title, price, imageUrl, description} = req.body;
     const title = req.body.title;
     const price = req.body.price;
     const imageUrl = req.body.imageUrl;
     const description = req.body.description;
     const prodId = req.body.productId;
-    const product = new Product(title, price, description, imageUrl, new ObjectId(prodId));
-    product.save()
-    .then( () => {
-        console.log("Product updated");
+    const product = new Product(title, price, description, imageUrl);
+    product.update(prodId)
+    .then(result => {
+        console.log('Product Updated!');
         res.redirect('/admin/products');
     })
-    .catch( err => console.log(err.message));
+    .catch(err => console.log(err));
+
 };
 
 exports.postDeleteProduct = (req, res, next) => {
     const prodId = req.body.productId;
     Product.delete(prodId)
-    .then( (result) => {
-        console.log(`DESTROYED PRODUCT ${result}`);
+    .then(result => {
+        console.log('DESTROYED PRODUCT');
         res.redirect('/admin/products');
 
     })

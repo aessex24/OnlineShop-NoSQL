@@ -11,6 +11,7 @@ const adminRoutes= require('./routes/admin');
 const shopRoutes = require('./routes/shop');
 const errorCtrl = require('./controllers/error');
 const mongoConnect = require('./util/database').mongoConnect;
+const User = require('./models/User');
 
 
 
@@ -23,13 +24,12 @@ app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended: false})); //registers middleware to parse incoming requests
 app.use(express.static(path.join(__dirname, 'public'))); //dynamically register css
 app.use( (req, res, next) => {
-    // User.findByPk(1)
-    // .then(user => {
-    //     req.user = user; //stored as a sequelize object not a regular JS object
-    //     next();
-    // })
-    // .catch(err => console.log(err));
-    next();
+    User.fetchUser('5c3d4d13269c0936f236d489')
+    .then(user => {
+        req.user = new User(user.name, user.email, user.cart, user._id);
+        next();
+    })
+    .catch(err => console.log(err));
 });
 
 app.use('/admin', adminRoutes);

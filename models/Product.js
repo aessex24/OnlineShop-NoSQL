@@ -1,27 +1,36 @@
 const mongodb = require('mongodb');
 const getDb = require('../util/database').getDb;
+//const User = require('./User');
+
 
 class Product {
-    constructor(title, price, description, imageUrl, id) {
+    constructor(title, price, description, imageUrl, userId) {
         this.title = title;
         this.price = price;
         this.description = description;
         this.imageUrl = imageUrl;
-        this._id = id;
+        this.userId = userId;
     }
 
     save() {
         const db = getDb();
         return db.collection('products')
-            .updateOne({_id: new mongodb.ObjectId(this._id)}, {$set: this}, {upsert: true})
+            .insertOne(this)
                 .then(result => {
-                    //console.log(result);
-                    console.log(`modified count: ${result.modifiedCount}`);
-                    console.log(`upserted count: ${result.upsertedCount}`);
-                    console.log(`matched count: ${result.matchedCount}`);
+                    console.log(`Inserted Count ${result.insertedCount}`);
                 })
                 .catch(err => console.log(err));
+    }
 
+    update(id) {
+        const db = getDb();
+        return db.collection('products')
+            .updateOne({_id: new mongodb.ObjectId(id)}, {$set: this})
+            .then(product => {
+                console.log(`Updated Count: ${product.modifiedCount}`);
+                return product;
+            })
+            .catch(err => console.log(err));
     }
 
     static fetchAll() {
@@ -30,7 +39,6 @@ class Product {
             .find()
             .toArray()
             .then(products => {
-                //console.log(products);
                 return products;
             })
             .catch(err => console.log(err));
@@ -42,18 +50,9 @@ class Product {
             .find({_id: new mongodb.ObjectId(id)})
             .next()
             .then(product => {
-                console.log('I am a single product', product);
-                return product;
-            })
-            .catch(err => console.log(err));
-    }
-
-    static update(id, title, price, imageUrl, description) {
-        const db = getDb();
-        return db.collection('products')
-            .updateOne({_id: new mongodb.ObjectId(id)}, {$set: {title: title, price: price, imageUrl: imageUrl, description: description}})
-            .then(product => {
-                return product;
+                if(product) {
+                    return product;
+                }
             })
             .catch(err => console.log(err));
     }
@@ -63,8 +62,7 @@ class Product {
         return db.collection('products')
             .deleteOne({_id: new mongodb.ObjectId(id)})
             .then(result => {
-               console.log("from Product file", result.deletedCount);
-               return result;
+               console.log(`Deleted Count: ${result.deletedCount}`);
             })
             .catch(err => console.log(err));
     }
