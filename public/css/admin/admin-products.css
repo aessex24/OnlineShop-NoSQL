@@ -2,7 +2,7 @@
     position: relative;
     margin-right: 2px;
     margin-bottom: 1em;
-    box-shadow: 0px 7px 10px rgba(0, 0, 0, 0.5);
+    box-shadow: 10px 15px 10px rgba(0,0,0,0.5);
     border-radius: 15px;
     transition: 0.4s ease-out
 
@@ -10,7 +10,7 @@
 
 .card:hover {
     transform: translateY(20px);
-    box-shadow: 0px 14px 17px rgba(0,0,0,0.5);
+    box-shadow: -10px -15px 20px rgba(0,0,0,0.5);
 
 }
 
